@@ -4,6 +4,8 @@
 # of the official Lego Robot Educator lessons that
 # are part of the EV3 education software
 
+# Group 10: Abinaya, Josh, Reuben, Vivian
+
 from ev3dev2.motor import MoveTank, OUTPUT_B, OUTPUT_C
 from ev3dev2.sensor.lego import ColorSensor
 from ev3dev2.button import Button
