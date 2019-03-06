@@ -12,8 +12,7 @@ def main():
 
     btn = Button() # we will use any button to stop script
     cl = ColorSensor()
-    cl.mode = 'COL-REFLECT'
-
+    cl.mode = 'COL-AMBIENT'
 
     while not btn.any():  # exit loop when any button pressed
         print(cl.value())
