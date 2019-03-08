@@ -6,15 +6,19 @@ from ev3dev2.button import Button
 from ev3dev2.sound import Sound
 from ev3dev2.sensor.lego import ColorSensor
 
+from ev3dev2 import *
+
 from time import sleep
 from threading import Thread
 
-def main()
+def main():
 
     btn = Button()
     sen = ColorSensor()
     tank_pair = MoveTank(OUTPUT_B, OUTPUT_C)
     sound = Sound()
+
+    global white_count
 
     white_count = 0
 
@@ -27,9 +31,8 @@ def main()
                 prev = white_count
 
     def white_search():
-        if sen.reflected_light_intensity > 15:
-            white_count++
-            sleep(0.5)
+        if sen.reflected_light_intensity > 18:
+            white_count += 1
 
 
     t = Thread(target = play_count())
@@ -41,8 +44,9 @@ def main()
     t.start()
 
 
-    while white_count < 2:
+    while True:
         tank_pair.on(left_speed = 30, right_speed = 30)
+
 
 
 try:
