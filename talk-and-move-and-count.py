@@ -48,6 +48,15 @@ def main():
 
     tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 320)
 
+    sound.play_song((
+        ('D4', 'e3'),
+        ('D4', 'e3'),
+        ('D4', 'e3'),
+        ('G4', 'h'),
+        ('D5', 'h')
+    ))
+    tank_pair.on_for_degrees(left_speed = 80, right_speed = 0, degrees = 2000)
+
 try:
     main()
 except:
@@ -56,3 +65,4 @@ except:
     traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
     while True:
         pass
+
