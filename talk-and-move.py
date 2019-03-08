@@ -29,7 +29,6 @@ def main():
                 sound.play_tone(frequency = 500, duration = 1, delay = 0, volume = 100,
                                 play_type = Sound.PLAY_NO_WAIT_FOR_COMPLETE)
                 prev = count
-            sleep(0.5)
 
     t  = Thread(target = play_count)
     t.setDaemon(True)
