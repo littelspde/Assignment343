@@ -15,9 +15,10 @@ def main():
     cl.mode = 'COL-AMBIENT'
 
     while not btn.any():  # exit loop when any button pressed
+        print("Ambient light reading:")
         print(cl.value())
 
-        sleep(0.5)  # wait for 0.1 seconds
+        sleep(1)  # wait for 0.1 seconds
 
 try:
     main()

@@ -26,7 +26,8 @@ def main():
         prev = 0
         while True:
             if count > prev:
-                sound.speak("beep")
+                sound.play_tone(frequency = 500, duration = 1, delay = 0, volume = 100,
+                                play_type = Sound.PLAY_NO_WAIT_FOR_COMPLETE)
                 prev = count
             sleep(0.5)
 
