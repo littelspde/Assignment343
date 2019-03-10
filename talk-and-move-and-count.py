@@ -37,7 +37,7 @@ def main():
     t.start()
 
 
-    while count < 3:  # exit loop when any button pressed
+    while count < 15:  # exit loop when any button pressed
 
        tank_pair.on(left_speed = 30, right_speed = 30)
        if cl.reflected_light_intensity > 18:
@@ -48,14 +48,14 @@ def main():
 
     tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 320)
 
-    sound.play_song((
+    """sound.play_song((
         ('D4', 'e3'),
         ('D4', 'e3'),
         ('D4', 'e3'),
         ('G4', 'h'),
         ('D5', 'h')
     ))
-    tank_pair.on_for_degrees(left_speed = 80, right_speed = 0, degrees = 2000)
+    tank_pair.on_for_degrees(left_speed = 80, right_speed = 0, degrees = 2000)"""
 
 try:
     main()
