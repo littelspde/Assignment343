@@ -22,7 +22,7 @@ def drive(speed = 40):
     global counted
     global grey_count
     tank_pair.on(left_speed=speed, right_speed=speed)
-    while True:
+    while black_count < 15:
         if cl.reflected_light_intensity < 12 and counted == False:
             s.play_tone(frequency=500, duration=0.2, delay=0, volume=100,
                             play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
@@ -34,6 +34,7 @@ def drive(speed = 40):
             grey_count += 1
             sleep(0.2)
         if grey_count >= 3:
+            counted = False
             grey_count = 0
             adjust()
         if cl.reflected_light_intensity > 49 or cl.reflected_light_intensity < 12:
@@ -50,12 +51,14 @@ def adjust():
         if cl.reflected_light_intensity > 49 or cl.reflected_light_intensity < 12:
             break
         turn_left = True
-        adjust_val *= 3
+        adjust_val += 33.5
         tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=adjust_val)
         sleep(0.2)
         if cl.reflected_light_intensity > 49 or cl.reflected_light_intensity < 12:
             break
-    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 30)
+        adjust_val += 33.5
+    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 80)
+    # the follow adjuct_vals should potentiall be (180-adjust_val) or (90-adjust_val)
     if turn_left:
         tank_pair.on_for_degrees(left_speed=30, right_speed=0, degrees=adjust_val)
     else:
@@ -65,7 +68,6 @@ def adjust():
 
 def main():
     drive(speed = 40)
-
 try:
     main()
 except:

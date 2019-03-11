@@ -21,7 +21,7 @@ def main():
 
     while not btn.any():
 
-        s.speak("Turning 90 degrees, 335 degrees")
+        """s.speak("Turning 90 degrees, 335 degrees")
         tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 335)
         sleep(3)
 
@@ -55,7 +55,19 @@ def main():
 
         s.speak("Turning 10 degrees, 16.75 degrees")
         tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=16.75)
-        sleep(2)
+        sleep(2)"""
+
+        adjust = 16.75
+        count = 1
+        while True:
+            tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees = adjust)
+            count += 1
+            sleep(2)
+            adjust = 16.75 * count
+            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=adjust)
+            count += 1
+            sleep(2)
+            adjust = 16.75 * count
 
 
 
