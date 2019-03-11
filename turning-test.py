@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+# Little Josh
+# An EV3 Python (library v2) solution to Exercise 3
+# of the official Lego Robot Educator lessons that
+# are part of the EV3 education software
+
+from ev3dev2.motor import MoveTank, OUTPUT_B, OUTPUT_C
+from ev3dev2.button import Button
+from ev3dev2.sound import Sound
+
+from time import sleep
+from threading import Thread
+
+
+def main():
+    # remove the following line and replace with your code
+
+    btn = Button()  # we will use any button to stop script
+    tank_pair = MoveTank(OUTPUT_B, OUTPUT_C)
+    s = Sound()
+
+    while not btn.any():
+
+        s.speak("Turning 90 degrees, 335 degrees")
+        tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 335)
+        sleep(3)
+
+        s.speak("Turning 180 degrees, 670 degrees")
+        tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 670)
+        sleep(3)
+
+        s.speak("Turning 45 degrees, 167.5 degrees")
+        tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 167.5)
+        sleep(3)
+
+        s.speak("Turning 10 degrees, 37.2 degrees")
+        tank_pair.on_for_degrees(left_speed = 30, right_speed = 0, degrees = 37.2 )
+        sleep(3)
+
+        sleep(3)
+        s.speak("Now turning on the spot, hopefully")
+        sleep(3)
+
+        s.speak("Turning 90 degrees, 167.5 degrees")
+        tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=167.5)
+        sleep(2)
+
+        s.speak("Turning 180 degrees, 330 degrees")
+        tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=330)
+        sleep(2)
+
+        s.speak("Turning 45 degrees, 83.75 degrees")
+        tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=83.75)
+        sleep(2)
+
+        s.speak("Turning 10 degrees, 16.75 degrees")
+        tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=16.75)
+        sleep(2)
+
+
+
+
+    sleep(5)
+
+
+
+try:
+    main()
+except:
+    import traceback
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+    while True:
+        pass
+
