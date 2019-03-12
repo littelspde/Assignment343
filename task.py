@@ -6,6 +6,7 @@ from ev3dev2.button import Button
 from ev3dev2.sound import Sound
 from ev3dev2.sensor.lego import ColorSensor
 from ev3dev2.sensor.lego import UltrasonicSensor
+from ev3dev2.sensor.lego import TouchSensor
 
 from time import sleep
 from threading import Thread
@@ -15,6 +16,10 @@ btn = Button()
 s = Sound()
 cl = ColorSensor()
 us = UltrasonicSensor()
+touch = TouchSensor()
+
+cl.mode = 'COL-REFLECT'
+us.mode = 'US-DIST-CM'
 
 black_count = 0
 grey_count = 0
@@ -57,6 +62,30 @@ def is_grey():
     else:
         return False
 
+#Calculate turns of less than 90 degrees
+def turn(degrees = 0, spot = True, right = True):
+
+    if spot == True:
+        ninety = 167.5
+    else:
+        ninety = 350
+
+    x = 90/degrees
+    turn_val = ninety/x
+
+    if spot:
+        if right:
+            tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees = turn_val)
+        else:
+            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
+    else:
+        if right:
+            tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=turn_val)
+        else:
+            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
+
+
+
 
 # A method that drives the robot forward and makes calls to adjust() once it goes off the
 # black and white tiles.
@@ -72,7 +101,7 @@ def drive(speed = 40):
     tank_pair.on(left_speed=speed, right_speed=speed)
 
     # While it hasn't counted 15 tiles
-    while black_count < 14:
+    while black_count < 15:
         if is_black() and counted == False:
            count_black()
         elif is_white():
@@ -123,7 +152,7 @@ def adjust():
 
     tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 140)
 
-    #The following adjust_vals may need to be changed
+    #The following adjust_vals may need to be changed/replaced
     #If it turned left to get on the tiles, turn right to straighten up
     if turn_left:
         tank_pair.on_for_degrees(left_speed=30, right_speed=0, degrees= 16.75 + adjust_val)
@@ -132,10 +161,53 @@ def adjust():
         tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees= 16.75 + adjust_val)
     drive(speed = 40)
 
+def sense_tower():
+    dist_mid = 0
+    dist_right = 0
+    dist_left = 0
+    sense_num = 0
+
+    # is_pressed needs updated to sensor name
+    while True:
+        # Ping tower, set dist_mid
+        dist_mid = us.value()
+        sleep(0.3)
+
+        # Turn left, ping tower, set dist_left variable
+        turn(degrees = 45, spot = True, right = False)
+        dist_left = us.value()
+        sleep(0.3)
+
+        # Turn right, ping tower, set dist_right variable
+        turn(degrees = 90, spot = True, right = False)
+        dist_right = us.value()
+        sleep(0.3)
+
+        # Update sense_num
+        sense_num += 1
+
+        # Turn towards direction closest to tower
+        if dist_mid < dist_left and dist_mid < dist_right:
+            turn(degrees = 45, spot = True, right = False)
+        elif dist_left < dist_right and dist_left < dist_mid:
+            turn(degrees = 90, spot = True, right = False)
+
+        # Drives 2 rotations/sense_num
+        rot = 2 / sense_num
+        tank_pair.on_for_rotations(left_speed=30, right_speed=30, rotations=rot)
+
+    # While on the black square, push tower
+    while is_black():
+        tank_pair.on(left_speed=70, right_speed=70)
+
+    # Play note once tower is off the black square
+    s.play_tone(frequency=500, duration=0.2, delay=0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+
 def main():
     drive(speed = 40)
 
-    tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=167.5)
+    turn(degrees = 90, spot = True, right = True)
+    tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 720)
     sleep(2)
 
     sense_tower()
