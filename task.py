@@ -140,7 +140,7 @@ def adjust():
         turn_left = True
         adjust_val += 10
 
-        turn(degrees = adjust_val, spot = True, right = True)
+        turn(degrees = adjust_val, spot = True, right = False)
         sleep(0.2)
         if is_white() or is_black():
             if is_black() and counted == False:
