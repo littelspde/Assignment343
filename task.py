@@ -27,8 +27,8 @@ counted = False
 
 # Setting threshold for what relfected light can be determined as black and white
 # Anything below b_thresh is black, anything higher than w_thresh is white
-b_thresh = 14
-w_thresh = 45
+b_thresh = 15
+w_thresh = 41
 
 # Increase the black_count and beeps
 def count_black():
@@ -62,15 +62,15 @@ def is_grey():
     else:
         return False
 
-#Calculate turns of less than 90 degrees
+#Calculate turns of less than 180 degrees
 def turn(degrees = 0, spot = True, right = True):
 
-    if spot == True:
-        ninety = 167.5
+    if spot:
+        ninety = 335
     else:
-        ninety = 350
+        ninety = 700
 
-    x = 90/degrees
+    x = 180/degrees
     turn_val = ninety/x
 
     if spot:
@@ -80,9 +80,9 @@ def turn(degrees = 0, spot = True, right = True):
             tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
     else:
         if right:
-            tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=turn_val + 10)
+            tank_pair.on_for_degrees(left_speed=30, right_speed=0, degrees=turn_val)
         else:
-            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val + 10)
+            tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees=turn_val)
 
 
 # A method that drives the robot forward and makes calls to adjust() once it goes off the
@@ -106,7 +106,7 @@ def drive(speed = 40):
             counted = False
         else:
             grey_count += 1
-            sleep(0.2)
+            sleep(0.1)
 
         # If grey has been sensed three times (its on a grey tile)
         if grey_count >= 3:
@@ -124,6 +124,8 @@ def adjust():
     global counted
 
     adjust_val = 10
+    a_count = 0
+
 
     #Boolean to determine it turned left to get back on the tiles
     turn_left = True
@@ -132,6 +134,7 @@ def adjust():
 
         turn_left=False
         turn(adjust_val, spot = True, right = True)
+        a_count += 1
         sleep(0.2)
         if is_white() or is_black():
             if is_black() and counted == False:
@@ -139,8 +142,10 @@ def adjust():
             break
         turn_left = True
         adjust_val += 10
+        a_count += 1
 
         turn(degrees = adjust_val, spot = True, right = False)
+        a_count += 1
         sleep(0.2)
         if is_white() or is_black():
             if is_black() and counted == False:
@@ -148,15 +153,15 @@ def adjust():
             break
         adjust_val += 10
 
-    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 140)
+    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 130)
 
     #The following adjust_vals may need to be changed/replaced
     #If it turned left to get on the tiles, turn right to straighten up
     if turn_left:
-        turn(degrees = adjust_val, spot = False, right = True)
+        turn(degrees = (adjust_val/2), spot = False, right = True)
     #If it turned right to get on the tiles, turn left to straighten up
     else:
-        turn(degrees = adjust_val, spot = False, right = False)
+        turn(degrees = (adjust_val/2), spot = False, right = False)
     drive(speed = 40)
 
 def sense_tower():
@@ -166,7 +171,7 @@ def sense_tower():
     sense_num = 0
 
     # is_pressed needs updated to sensor name
-    while True:
+    while not touch.is_pressed:
         # Ping tower, set dist_mid
         dist_mid = us.value()
         sleep(0.3)
@@ -192,10 +197,7 @@ def sense_tower():
 
         # Drives 2 rotations/sense_num
         rot = 2
-        tank_pair.on_for_rotations(left_speed=60, right_speed=60, rotations=rot)
-
-        if touch.ispressed():
-            break
+        tank_pair.on_for_rotations(left_speed=50, right_speed=50, rotations=rot)
 
 
     # While on the black square, push tower
