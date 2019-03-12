@@ -26,7 +26,7 @@ grey_count = 0
 counted = False
 
 # Setting threshold for what relfected light can be determined as black and white
-# Anything below b_thresh
+# Anything below b_thresh is black, anything higher than w_thresh is white
 b_thresh = 14
 w_thresh = 45
 
@@ -75,16 +75,14 @@ def turn(degrees = 0, spot = True, right = True):
 
     if spot:
         if right:
-            tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees = turn_val)
+            tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees =turn_val)
         else:
             tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
     else:
         if right:
-            tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=turn_val)
+            tank_pair.on_for_degrees(left_speed=15, right_speed=-15, degrees=turn_val + 10)
         else:
-            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
-
-
+            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val + 10)
 
 
 # A method that drives the robot forward and makes calls to adjust() once it goes off the
@@ -125,7 +123,7 @@ def adjust():
     global black_count
     global counted
 
-    adjust_val = 16.75
+    adjust_val = 10
 
     #Boolean to determine it turned left to get back on the tiles
     turn_left = True
@@ -133,32 +131,32 @@ def adjust():
     while is_grey():
 
         turn_left=False
-        tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees = adjust_val)
+        turn(adjust_val, spot = True, right = True)
         sleep(0.2)
         if is_white() or is_black():
             if is_black() and counted == False:
                 count_black()
             break
         turn_left = True
-        adjust_val += 33.5
+        adjust_val += 10
 
-        tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=adjust_val)
+        turn(degrees = adjust_val, spot = True, right = True)
         sleep(0.2)
         if is_white() or is_black():
             if is_black() and counted == False:
                 count_black()
             break
-        adjust_val += 33.5
+        adjust_val += 10
 
     tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 140)
 
     #The following adjust_vals may need to be changed/replaced
     #If it turned left to get on the tiles, turn right to straighten up
     if turn_left:
-        tank_pair.on_for_degrees(left_speed=30, right_speed=0, degrees= 16.75 + adjust_val)
+        turn(degrees = adjust_val, spot = False, right = True)
     #If it turned right to get on the tiles, turn left to straighten up
     else:
-        tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees= 16.75 + adjust_val)
+        turn(degrees = adjust_val, spot = False, right = False)
     drive(speed = 40)
 
 def sense_tower():
@@ -168,7 +166,7 @@ def sense_tower():
     sense_num = 0
 
     # is_pressed needs updated to sensor name
-    while True:
+    while not touch.ispressed():
         # Ping tower, set dist_mid
         dist_mid = us.value()
         sleep(0.3)
@@ -179,7 +177,7 @@ def sense_tower():
         sleep(0.3)
 
         # Turn right, ping tower, set dist_right variable
-        turn(degrees = 90, spot = True, right = False)
+        turn(degrees = 90, spot = True, right = True)
         dist_right = us.value()
         sleep(0.3)
 
@@ -193,12 +191,12 @@ def sense_tower():
             turn(degrees = 90, spot = True, right = False)
 
         # Drives 2 rotations/sense_num
-        rot = 2 / sense_num
-        tank_pair.on_for_rotations(left_speed=30, right_speed=30, rotations=rot)
+        rot = 2
+        tank_pair.on_for_rotations(left_speed=60, right_speed=60, rotations=rot)
 
     # While on the black square, push tower
     while is_black():
-        tank_pair.on(left_speed=70, right_speed=70)
+        tank_pair.on(left_speed=100, right_speed=100)
 
     # Play note once tower is off the black square
     s.play_tone(frequency=500, duration=0.2, delay=0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
@@ -207,7 +205,7 @@ def main():
     drive(speed = 40)
 
     turn(degrees = 90, spot = True, right = True)
-    tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 720)
+    tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 3800)
     sleep(2)
 
     sense_tower()
