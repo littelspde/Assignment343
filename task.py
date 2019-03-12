@@ -166,7 +166,7 @@ def sense_tower():
     sense_num = 0
 
     # is_pressed needs updated to sensor name
-    while not touch.ispressed():
+    while True:
         # Ping tower, set dist_mid
         dist_mid = us.value()
         sleep(0.3)
@@ -193,6 +193,10 @@ def sense_tower():
         # Drives 2 rotations/sense_num
         rot = 2
         tank_pair.on_for_rotations(left_speed=60, right_speed=60, rotations=rot)
+
+        if touch.ispressed():
+            break
+
 
     # While on the black square, push tower
     while is_black():
