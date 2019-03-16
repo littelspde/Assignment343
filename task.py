@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-# Little Josh
+# Little Josh (aka LJ)
+
+
 
 from ev3dev2.motor import MoveTank, OUTPUT_B, OUTPUT_C
 from ev3dev2.button import Button
@@ -28,7 +30,7 @@ counted = False
 # Setting threshold for what reflected light can be determined as black and white
 # Anything below b_thresh is black, anything higher than w_thresh is white
 b_thresh = 15
-w_thresh = 41
+w_thresh = 44
 
 # Increase the black_count and beeps
 def count_black():
@@ -85,17 +87,53 @@ def turn(degrees = 0.0, spot = True, right = True):
             tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees=turn_val)
 
 
+# A method to calibrate the white threshold (w_thresh) and black threshold (b_thresh) based off
+# the ambient light on the black starting tile. Do not run on any tiles, only the starting 'S' square
+def calibrate():
+
+    global b_thresh, w_thresh
+
+    cl.mode = 'COL-AMBIENT'
+    amb = cl.value()
+
+    if amb > 8:
+        w_thresh = 49
+        b_thresh = 16
+
+    cl.mode = 'COL-REFLECT'
+    sleep(1)
+
+
+def start():
+
+    count = 0
+    seen = False
+
+    tank_pair.on(left_speed = 20, right_speed = 20)
+    while count < 2:
+
+        if not is_black() and not seen:
+            s.play_tone(frequency=100, duration=0.3, delay=0, volume=100,
+                        play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+            count += 1
+            seen = True
+
+        elif is_black():
+            if seen = True:
+                count_black()
+            seen = False
+
+    turn(degrees = 90, spot = True, right = True)
+
+
+
+
+
 # A method that drives the robot forward and makes calls to adjust() once it goes off the
 # black and white tiles.
 def drive(speed = 40):
 
-    global black_count
-    global grey_count
-    global b_thresh
-    global w_thresh
-
-    black_cal = False
-    white_cal = False
+    global black_count, grey_count, b_thresh, w_thresh
 
     #Boolean to determine whether or not it has counted a black square
     global counted
@@ -158,12 +196,10 @@ def adjust():
             break
         adjust_val += 10
 
-    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 130)
+    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 160)
 
     #If it turned left to get on the tiles, turn right to straighten up
     if turn_left:
-        # (Adjust_val - 10) gives it a final age 5degrees closer to straight than it was when i went off tiles
-        adjust_val -= 10
         turn(degrees = (adjust_val/2), spot = False, right = True)
     #If it turned right to get on the tiles, turn left to straighten up
     else:
@@ -172,68 +208,54 @@ def adjust():
     drive(speed = 40)
 
 def sense_tower():
+
+
     dist_mid = 0
-
     dist_right = 0
-    dist_mid_right = 0
-
     dist_left = 0
-    dist_mid_left = 0
 
     sense_num = 0
 
-    seen_black = False
 
 
-    # is_pressed needs updated to sensor name
     while not touch.is_pressed:
+
 
         # Ping tower, set dist_mid
         dist_mid = us.value()
         sleep(0.3)
 
-        turn(degrees = 22.5, spot = True, right = False)
-        dist_mid_left = us.value()
-        sleep(0.3)
-
         # Turn left, ping tower, set dist_left variable
-        turn(degrees=22.5, spot=True, right=False)
+        turn(degrees= 45, spot=True, right=False)
         dist_left = us.value()
         sleep(0.3)
 
-        turn(degrees=67.5, spot=True, right=True)
-        dist_mid_right = us.value()
-        sleep(0.3)
 
         # Turn right, ping tower, set dist_right variable
-        turn(degrees=22.5, spot=True, right=True)
+        turn(degrees= 90, spot=True, right=True)
         dist_right = us.value()
         sleep(0.3)
 
+        sense_num += 1
 
+        # Turn toward shortest distance registered
         if dist_mid < dist_left and dist_mid < dist_right:
-            if dist_mid_left < dist_mid and dist_mid_left < dist_mid_right:
-                turn(degrees = 67.5, spot = True, right = False)
-            elif dist_mid_right < dist_mid and dist_mid_right < dist_mid_left:
-                turn(degrees = 22.5, spot = True, right = False)
-            else:
-                turn(degrees = 45, spot = True, right = False)
+            turn(degrees = 45, spot = True, right = False)
         elif dist_left < dist_right and dist_left < dist_mid:
-            if dist_mid_left < dist_left:
-                turn(degrees = 67.5, spot = True, right = False)
-            else:
-                turn(degrees = 90, spot = True, right = False)
-        else:
-            if dist_mid_right < dist_right:
-                turn(degrees = 22.5, spot = True, right = False)
+            turn(degrees = 90, spot = True, right = False)
 
-        if sense_num <= 2:
+        # After a few scans, drive less between checks to improve accuracy
+        if sense_num <= 3:
             rot = 2
+        elif 3 < sense_num < 5:
+            rot = 1
         else:
-            rot = 0.5
+            rot = 0.7
         tank_pair.on_for_rotations(left_speed=50, right_speed=50, rotations=rot)
 
-    # Back up and move forward to gain momentum for push
+
+
+    """# Back up and move forward to gain momentum for push
     tank_pair.on_for_rotations(left_speed = -40, right_speed = -40, rotations = 1.5)
 
     while not seen_black:
@@ -241,25 +263,31 @@ def sense_tower():
         if is_black():
             seen_black = True
             while is_black():
-                tank_pair.on(left_speed = 70, right_speed = 70)
+                tank_pair.on(left_speed = 70, right_speed = 70)"""
 
-    #Had to replace this code as the robto kept stopping BUT my above implementation doesn't work either
-    """"# While on the black square, push tower
+    # While on the black square, push tower
     while is_black():
-        tank_pair.on(left_speed=70, right_speed=70)"""
+        tank_pair.on(left_speed = -10, right_speed = -10)
+        tank_pair.on(left_speed=70, right_speed=70)
 
     # Play note once tower is off the black square
-    s.play_tone(frequency=500, duration=0.2, delay=0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+    s.play_tone(frequency=500, duration=1, delay=0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
 def main():
+
+    calibrate()
+
+    start()
+
     drive(speed = 40)
 
     turn(degrees = 90, spot = True, right = True)
+
     tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 2800)
-    sleep(2)
+    sleep(1)
+
 
     sense_tower()
-
 
 try:
     main()
