@@ -98,7 +98,6 @@ def calibrate():
 
     if amb > 8:
         w_thresh = 49
-        b_thresh = 16
 
     cl.mode = 'COL-REFLECT'
     sleep(1)
@@ -113,16 +112,15 @@ def start():
     while count < 2:
 
         if not is_black() and not seen:
-            s.play_tone(frequency=100, duration=0.3, delay=0, volume=100,
-                        play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
             count += 1
             seen = True
 
         elif is_black():
-            if seen == True:
+            if seen:
                 count_black()
             seen = False
 
+    tank_pair.on_for_degrees(left_speed = -40, right_speed = -40, degrees = 100)
     turn(degrees = 90, spot = True, right = True)
 
 
@@ -253,25 +251,26 @@ def sense_tower():
             rot = 0.7
         tank_pair.on_for_rotations(left_speed=50, right_speed=50, rotations=rot)
 
+    #Tower found
 
+    tank_pair.on_for_degrees(left_speed = -10, right_speed = -10, degrees = 70)
 
-    """# Back up and move forward to gain momentum for push
-    tank_pair.on_for_rotations(left_speed = -40, right_speed = -40, rotations = 1.5)
-
-    while not seen_black:
-        tank_pair.on_for_rotations(left_speed=70, right_speed=70, rotations=1.5)
-        if is_black():
-            seen_black = True
-            while is_black():
-                tank_pair.on(left_speed = 70, right_speed = 70)"""
-
-    # While on the black square, push tower
-    while is_black():
-        tank_pair.on(left_speed = -10, right_speed = -10)
+    while True:
         tank_pair.on(left_speed=70, right_speed=70)
+        sleep(2)
+        if is_grey():
+            break
 
-    # Play note once tower is off the black square
-    s.play_tone(frequency=500, duration=1, delay=0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+    tank_pair.off()
+    sleep(1)
+
+    s.play_song((
+        ('D4', 'e3'),
+        ('D4', 'e3'),
+        ('D4', 'e3'),
+        ('G4', 'h'),
+        ('D5', 'h')
+    ))
 
 def main():
 
@@ -285,7 +284,6 @@ def main():
 
     tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 2800)
     sleep(1)
-
 
     sense_tower()
 
