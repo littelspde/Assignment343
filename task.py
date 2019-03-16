@@ -105,14 +105,14 @@ def calibrate():
 
 def start():
 
-    count = 0
+    g_count = 0
     seen = False
 
     tank_pair.on(left_speed = 20, right_speed = 20)
-    while count < 2:
+    while g_count < 2:
 
         if not is_black() and not seen:
-            count += 1
+            g_count += 1
             seen = True
 
         elif is_black():
