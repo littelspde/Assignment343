@@ -119,7 +119,7 @@ def start():
             seen = True
 
         elif is_black():
-            if seen = True:
+            if seen == True:
                 count_black()
             seen = False
 
