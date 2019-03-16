@@ -67,13 +67,16 @@ def is_grey():
 #Calculate turns of less than 180 degrees
 def turn(degrees = 0.0, spot = True, right = True):
 
+    if degrees <= 0:
+        return
+
     if spot:
-        ninety = 335
+        one_eighty = 335
     else:
-        ninety = 700
+        one_eighty = 700
 
     x = 180/degrees
-    turn_val = ninety/x
+    turn_val = one_eighty/x
 
     if spot:
         if right:
@@ -120,8 +123,19 @@ def start():
                 count_black()
             seen = False
 
-    tank_pair.on_for_degrees(left_speed = -40, right_speed = -40, degrees = 100)
-    turn(degrees = 90, spot = True, right = True)
+    ##tank_pair.on_for_degrees(left_speed = -40, right_speed = -40, degrees = 100)
+    ##sleep(0.5)
+
+    while not is_black():
+        tank_pair.on(left_speed = -20, right_speed = -20)
+
+    turn(degrees = 180, spot = False, right = False)
+    turn(degrees = 105, spot = False, right = False)
+    turn(degrees = 15, spot = False, right = True)
+
+    sleep(0.5)
+
+    #turn(degrees = 90, spot = True, right = True)
 
 
 
@@ -198,7 +212,7 @@ def adjust():
 
     #If it turned left to get on the tiles, turn right to straighten up
     if turn_left:
-        turn(degrees = (adjust_val/2), spot = False, right = True)
+        turn(degrees = (adjust_val/2) - 5, spot = False, right = True)
     #If it turned right to get on the tiles, turn left to straighten up
     else:
         turn(degrees = (adjust_val/2), spot = False, right = False)
@@ -257,7 +271,7 @@ def sense_tower():
 
     while True:
         tank_pair.on(left_speed=70, right_speed=70)
-        sleep(2)
+        sleep(1)
         if is_grey():
             break
 
