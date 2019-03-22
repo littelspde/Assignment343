@@ -11,7 +11,6 @@ from ev3dev2.sensor.lego import UltrasonicSensor
 from ev3dev2.sensor.lego import TouchSensor
 
 from time import sleep
-from threading import Thread
 
 tank_pair = MoveTank(OUTPUT_B, OUTPUT_C)
 btn = Button()
@@ -29,8 +28,8 @@ counted = False
 
 # Setting threshold for what reflected light can be determined as black and white
 # Anything below b_thresh is black, anything higher than w_thresh is white
-b_thresh = 16
-w_thresh = 46
+b_thresh = 15
+w_thresh = 45
 
 # Increase the black_count and beeps
 def count_black():
@@ -65,7 +64,7 @@ def is_grey():
         return False
 
 #Calculate turns of less than 180 degrees
-def turn(degrees = 0.0, spot = True, right = True):
+def turn(degrees = 0.0, spot = True, right = True, forward = True):
 
     if degrees <= 0:
         return
@@ -78,16 +77,20 @@ def turn(degrees = 0.0, spot = True, right = True):
     x = 180/degrees
     turn_val = one_eighty/x
 
+    spot_speed = 15
+    forward_speed = 30 if forward else -30
+
     if spot:
         if right:
-            tank_pair.on_for_degrees(left_speed = 15, right_speed = -15, degrees =turn_val)
+            tank_pair.on_for_degrees(left_speed = spot_speed, right_speed = -spot_speed, degrees = turn_val)
         else:
-            tank_pair.on_for_degrees(left_speed=-15, right_speed=15, degrees=turn_val)
+            tank_pair.on_for_degrees(left_speed = -spot_speed, right_speed = spot_speed, degrees = turn_val)
     else:
         if right:
-            tank_pair.on_for_degrees(left_speed=30, right_speed=0, degrees=turn_val)
+            tank_pair.on_for_degrees(left_speed = forward_speed, right_speed = 0, degrees = turn_val)
         else:
-            tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees=turn_val)
+            tank_pair.on_for_degrees(left_speed = 0, right_speed = forward_speed, degrees = turn_val)
+
 
 # A method to calibrate the white threshold (w_thresh) and black threshold (b_thresh) based off
 # the ambient light on the black starting tile. Do not run on any tiles, only the starting 'S' square
@@ -99,7 +102,7 @@ def calibrate():
     amb = cl.value()
 
     if amb > 8:
-        w_thresh = 49
+        w_thresh = 50
 
     cl.mode = 'COL-REFLECT'
     sleep(1)
@@ -125,12 +128,14 @@ def start():
     ##tank_pair.on_for_degrees(left_speed = -40, right_speed = -40, degrees = 100)
     ##sleep(0.5)
 
-    while not is_black():
-        tank_pair.on(left_speed = -20, right_speed = -20)
+    # while not is_black():
+    #     #     tank_pair.on(left_speed = -20, right_speed = -20)
 
-    turn(degrees = 180, spot = False, right = False)
-    turn(degrees = 105, spot = False, right = False)
-    turn(degrees = 20, spot = False, right = True)
+    turn(degrees = 90, spot = False, right = False, forward = False)
+
+    # turn(degrees = 180, spot = False, right = False)
+    # turn(degrees = 105, spot = False, right = False)
+    # turn(degrees = 15, spot = False, right = True)
 
     sleep(0.5)
 
