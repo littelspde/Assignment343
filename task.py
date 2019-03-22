@@ -29,8 +29,8 @@ counted = False
 
 # Setting threshold for what reflected light can be determined as black and white
 # Anything below b_thresh is black, anything higher than w_thresh is white
-b_thresh = 15
-w_thresh = 44
+b_thresh = 16
+w_thresh = 46
 
 # Increase the black_count and beeps
 def count_black():
@@ -89,7 +89,6 @@ def turn(degrees = 0.0, spot = True, right = True):
         else:
             tank_pair.on_for_degrees(left_speed=0, right_speed=30, degrees=turn_val)
 
-
 # A method to calibrate the white threshold (w_thresh) and black threshold (b_thresh) based off
 # the ambient light on the black starting tile. Do not run on any tiles, only the starting 'S' square
 def calibrate():
@@ -131,7 +130,7 @@ def start():
 
     turn(degrees = 180, spot = False, right = False)
     turn(degrees = 105, spot = False, right = False)
-    turn(degrees = 15, spot = False, right = True)
+    turn(degrees = 20, spot = False, right = True)
 
     sleep(0.5)
 
