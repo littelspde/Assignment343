@@ -29,7 +29,7 @@ counted = False
 # Setting threshold for what reflected light can be determined as black and white
 # Anything below b_thresh is black, anything higher than w_thresh is white
 b_thresh = 15
-w_thresh = 45
+w_thresh = 49
 
 # Increase the black_count and beeps
 def count_black():
@@ -125,21 +125,9 @@ def start():
                 count_black()
             seen = False
 
-    ##tank_pair.on_for_degrees(left_speed = -40, right_speed = -40, degrees = 100)
-    ##sleep(0.5)
-
-    # while not is_black():
-    #     #     tank_pair.on(left_speed = -20, right_speed = -20)
-
     turn(degrees = 90, spot = False, right = False, forward = False)
 
-    # turn(degrees = 180, spot = False, right = False)
-    # turn(degrees = 105, spot = False, right = False)
-    # turn(degrees = 15, spot = False, right = True)
-
     sleep(0.5)
-
-    #turn(degrees = 90, spot = True, right = True)
 
 
 
@@ -184,6 +172,7 @@ def adjust():
 
     adjust_val = 10
     a_count = 0
+    back_up = False
 
     #Boolean to determine it turned left to get back on the tiles
     turn_left = True
@@ -211,6 +200,7 @@ def adjust():
                 count_black()
             break
         adjust_val += 10
+
 
     tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 160)
 
@@ -300,7 +290,7 @@ def main():
 
     turn(degrees = 90, spot = True, right = True)
 
-    tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 2800)
+    tank_pair.on_for_degrees(left_speed = 50, right_speed = 50, degrees = 3600)
     sleep(1)
 
     sense_tower()
