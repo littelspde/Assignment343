@@ -12,6 +12,7 @@ from ev3dev2.sensor.lego import TouchSensor
 
 from time import sleep
 
+# Creating instances of sensor classes
 tank_pair = MoveTank(OUTPUT_B, OUTPUT_C)
 btn = Button()
 s = Sound()
@@ -19,9 +20,11 @@ cl = ColorSensor()
 us = UltrasonicSensor()
 touch = TouchSensor()
 
+# Setting default sensor modes
 cl.mode = 'COL-REFLECT'
 us.mode = 'US-DIST-CM'
 
+# Initialising global variables
 black_count = 0
 grey_count = 0
 counted = False
@@ -114,6 +117,8 @@ def start():
     seen = False
 
     tank_pair.on(left_speed = 20, right_speed = 20)
+
+    # Drive until you have seen a non-black tile, followed by a black tile, followed by another non-black
     while g_count < 2:
 
         if not is_black() and not seen:
@@ -125,6 +130,7 @@ def start():
                 count_black()
             seen = False
 
+    # Turn 90 degrees to line up with tiles
     turn(degrees = 90, spot = False, right = False, forward = False)
 
     sleep(0.5)
@@ -174,9 +180,11 @@ def adjust():
     a_count = 0
     back_up = False
 
-    #Boolean to determine it turned left to get back on the tiles
+    # Boolean to determine it turned left to get back on the tiles
     turn_left = True
 
+    # Until you find a black or white tile, scan by turning left and right, increasing angle of turn by
+    # 10 degrees each time.
     while is_grey():
 
         turn_left=False
@@ -201,7 +209,7 @@ def adjust():
             break
         adjust_val += 10
 
-
+    # Drive onto the black/white tile that was found
     tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 160)
 
     #If it turned left to get on the tiles, turn right to straighten up
@@ -211,8 +219,11 @@ def adjust():
     else:
         turn(degrees = (adjust_val/2), spot = False, right = False)
 
+    #Call back to drive
     drive(speed = 40)
 
+
+# Makes 3 scans for the tower and drive in the direction of the shortest distance found to object
 def sense_tower():
 
 
@@ -221,7 +232,6 @@ def sense_tower():
     dist_left = 0
 
     sense_num = 0
-
 
 
     while not touch.is_pressed:
@@ -235,7 +245,6 @@ def sense_tower():
         turn(degrees= 45, spot=True, right=False)
         dist_left = us.value()
         sleep(0.3)
-
 
         # Turn right, ping tower, set dist_right variable
         turn(degrees= 90, spot=True, right=True)
@@ -280,6 +289,7 @@ def sense_tower():
         ('D5', 'h')
     ))
 
+# Main method that makes calls to the functions for each part of the task
 def main():
 
     calibrate()
@@ -294,6 +304,7 @@ def main():
     sleep(1)
 
     sense_tower()
+
 
 try:
     main()
