@@ -130,6 +130,8 @@ def start():
                 count_black()
             seen = False
 
+    tank_pair.on_for_degrees(left_speed=40, right_speed=40, degrees=80)
+
     # Turn 90 degrees to line up with tiles
     turn(degrees = 90, spot = False, right = False, forward = False)
 
@@ -178,7 +180,7 @@ def adjust():
 
     adjust_val = 10
     a_count = 0
-    back_up = False
+    recur = False
 
     # Boolean to determine it turned left to get back on the tiles
     turn_left = True
@@ -209,15 +211,37 @@ def adjust():
             break
         adjust_val += 10
 
+        if (adjust_val >= 100):
+
+            # Return to original position
+            turn(degrees = 50, spot = True, right = True)
+
+            #Inch back
+            tank_pair.on_for_degrees(left_speed=-30, right_speed=-30, degrees = 60)
+
+            recur = True
+            adjust()
+
+    if adjust_val > 20:
     # Drive onto the black/white tile that was found
-    tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 160)
+        tank_pair.on_for_degrees(left_speed = 40, right_speed = 40, degrees = 160)
+    else:
+        tank_pair.on_for_degrees(left_speed=40, right_speed=40, degrees=60)
 
     #If it turned left to get on the tiles, turn right to straighten up
-    if turn_left:
-        turn(degrees = (adjust_val/2) - 5, spot = False, right = True)
-    #If it turned right to get on the tiles, turn left to straighten up
-    else:
-        turn(degrees = (adjust_val/2), spot = False, right = False)
+    if not recur:
+        if adjust_val > 20:
+            if turn_left:
+                turn(degrees = (adjust_val/2) - 5, spot = False, right = True)
+            #If it turned right to get on the tiles, turn left to straighten up
+            else:
+                turn(degrees = (adjust_val/2), spot = False, right = False)
+        else:
+            if turn_left:
+                turn(degrees=(10), spot=False, right=True)
+                # If it turned right to get on the tiles, turn left to straighten up
+            else:
+                turn(degrees=(10), spot=False, right=False)
 
     #Call back to drive
     drive(speed = 40)

@@ -141,7 +141,7 @@ def start():
 
 # A method that drives the robot forward and makes calls to adjust() once it goes off the
 # black and white tiles.
-def drive():
+def drive(l_speed, r_speed):
 
     global black_count, grey_count, b_thresh, w_thresh
 
@@ -149,8 +149,6 @@ def drive():
     global counted
 
     # Drive forward
-    l_speed = 40
-    r_speed = 35
     tank_pair.on(left_speed=l_speed, right_speed=r_speed)
 
     # While it hasn't counted 15 tiles
@@ -160,20 +158,26 @@ def drive():
         elif is_white():
             counted = False
         else:
-            grey_count += 1
-            sleep(0.1)
-
-        # If grey has been sensed three times (its on a grey tile)
-        if grey_count >= 3:
-            counted = False
-            grey_count = 0
-            # adjust()
+            # grey_count += 1
+            # sleep(0.1)
             temp = l_speed
             l_speed = r_speed
             r_speed = temp
-            tank_pair.on(left_speed=l_speed, right_speed=r_speed)
-        if is_white() or is_black():
-            grey_count = 0
+            tank_pair.off()
+            drive(l_speed, r_speed)
+
+        # If grey has been sensed three times (its on a grey tile)
+        # if grey_count >= 1:
+        #     counted = False
+        #     grey_count = 0
+        #     # adjust()
+        #     temp = l_speed
+        #     l_speed = r_speed
+        #     r_speed = temp
+        #     tank_pair.off()
+        #     drive(l_speed, r_speed)
+        # if is_white() or is_black():
+        #     grey_count = 0
 
 
 # A method to bring the robot back onto the black and white tiles after it veers off course
@@ -302,7 +306,7 @@ def main():
 
     start()
 
-    drive(speed = 40)
+    drive(35, 25)
 
     turn(degrees = 90, spot = True, right = True)
 
